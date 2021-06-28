@@ -9,6 +9,7 @@ if (typeof AFRAME === 'undefined') {
  */
 AFRAME.registerComponent('textarea', {
   schema: {
+    transparentBG: {type: 'boolean', default: false},
     cols: {type: 'int', default: 40},
     rows: {type: 'int', default: 20},
     color: {type: 'color', default: 'black'},
@@ -26,10 +27,12 @@ AFRAME.registerComponent('textarea', {
     this.selectionStart = this.selectionEnd = 0;
     this.endIndexInfo = this.startIndexInfo = null;
     this.origin = {x: 0, y: 0};
-
-    this.background = document.createElement('a-plane');
-    this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
-    this.el.appendChild(this.background);
+    
+    if (!this.transparentBG) {
+      this.background = document.createElement('a-plane');
+      this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
+      this.el.appendChild(this.background);
+    }
 
     this.textAnchor = document.createElement('a-entity');
     this.el.appendChild(this.textAnchor);
@@ -69,7 +72,7 @@ AFRAME.registerComponent('textarea', {
       this._updateTextarea();
     }
 
-    if (this.data.backgroundColor !== oldData.backgroundColor || this.data.disabledBackgroundColor !== oldData.disabledBackgroundColor) {
+    if ((this.data.backgroundColor !== oldData.backgroundColor || this.data.disabledBackgroundColor !== oldData.disabledBackgroundColor) && !this.data.transparentBG) {
       this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
     }
 
@@ -77,7 +80,8 @@ AFRAME.registerComponent('textarea', {
       this.blinkEnabled = !this.data.disabled;
       this.textarea.disabled = this.data.disabled;
       this.cursorMesh.visible = !this.data.disabled;
-      this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
+      if (!this.data.transparentBG)
+        this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
     }
   },
   focus: function () {
@@ -123,8 +127,11 @@ AFRAME.registerComponent('textarea', {
     this.charWidth = fontWidthFactor * this.textAnchor.object3DMap.text.scale.x;
     this.charHeight = this.charWidth * layout.lineHeight / fontWidthFactor;
     this.textAnchor.setAttribute('position', {x: 0, y: this.charHeight * this.data.rows / 2, z: 0});
-    this.background.setAttribute('scale', {x: 1.05, y: this.charHeight * this.data.rows * 1.05, z: 1});
-    this.background.setAttribute('position', {x: 0, y: 0, z: 0});
+    if (!this.data.transparentBG) {
+      this.background.setAttribute('scale', {x: 1.05, y: this.charHeight * this.data.rows * 1.05, z: 1});
+      this.background.setAttribute('position', {x: 0, y: 0, z: 0});
+    }
+   
     this._emit('char-metrics-changed');
   },
   _checkAndUpdateSelection: function () {
