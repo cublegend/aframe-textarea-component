@@ -28,10 +28,11 @@ AFRAME.registerComponent('textarea', {
     this.endIndexInfo = this.startIndexInfo = null;
     this.origin = {x: 0, y: 0};
     
-    if (!this.data.transparentBG) {
-      this.background = document.createElement('a-plane');
-      this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
-      this.el.appendChild(this.background);
+    this.background = document.createElement('a-plane');
+    this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
+    this.el.appendChild(this.background);
+    if (this.data.transparentBG) {
+      this.background.setAttribute('material', {opacity: 0, transparent: true});
     }
 
     this.textAnchor = document.createElement('a-entity');
@@ -72,7 +73,7 @@ AFRAME.registerComponent('textarea', {
       this._updateTextarea();
     }
 
-    if ((this.data.backgroundColor !== oldData.backgroundColor || this.data.disabledBackgroundColor !== oldData.disabledBackgroundColor) && !this.data.transparentBG) {
+    if ((this.data.backgroundColor !== oldData.backgroundColor || this.data.disabledBackgroundColor !== oldData.disabledBackgroundColor)) {
       this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
     }
 
@@ -80,8 +81,8 @@ AFRAME.registerComponent('textarea', {
       this.blinkEnabled = !this.data.disabled;
       this.textarea.disabled = this.data.disabled;
       this.cursorMesh.visible = !this.data.disabled;
-      if (!this.data.transparentBG)
-        this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
+      this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
+    
     }
   },
   focus: function () {
