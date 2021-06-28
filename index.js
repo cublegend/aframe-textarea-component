@@ -28,7 +28,7 @@ AFRAME.registerComponent('textarea', {
     this.endIndexInfo = this.startIndexInfo = null;
     this.origin = {x: 0, y: 0};
     
-    if (!this.transparentBG) {
+    if (!this.data.transparentBG) {
       this.background = document.createElement('a-plane');
       this.background.setAttribute('color', this.data.disabled ? this.data.disabledBackgroundColor : this.data.backgroundColor);
       this.el.appendChild(this.background);
